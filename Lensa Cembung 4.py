@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from PIL import Image, ImageDraw, ImageTk
+import random
 
 def create_tree_image():
     """Membuat gambar pohon setinggi 100 satuan."""
@@ -53,14 +54,20 @@ def update(*args):
     focal_length = focus_slider.get()
     draw_simulation(ax, obj_size, obj_dist, focal_length, obj_img)
 
-def upload_image():
-    global obj_img
-    file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
-    if file_path:
-        img = Image.open(file_path)
-        img = img.convert("RGBA")
-        obj_img = np.array(img)
-        update()
+#def upload_image():
+ #   global obj_img
+  #  file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg")])
+   # if file_path:
+    #    img = Image.open(file_path)
+     #   img = img.convert("RGBA")
+      #  obj_img = np.array(img)
+       # update()
+
+ # Efek latar belakang berubah warna
+    bg_color = (1 - obj_dist / 400, 1, obj_dist / 400)
+    ax.set_facecolor(bg_color)
+    canvas.draw()
+
 
 def reset_simulation():
     global obj_img
@@ -70,7 +77,9 @@ def reset_simulation():
     focus_slider.set(50)  # Reset ke titik fokus awal 50
     draw_simulation(ax, 100, 100, 50, obj_img)
     canvas.draw()
-
+ # Pesan pop-up reset
+    messages = ["Pohon kembali tumbuh!", "Dunia optik kembali normal!", "Reset berhasil, coba lagi!"]
+    messagebox.showinfo("Reset Simulasi", random.choice(messages))
 
 root = tk.Tk()
 root.title("Simulasi Lensa Cembung dengan Pohon")
@@ -83,13 +92,13 @@ main_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
 size_frame = tk.Frame(root)
 size_frame.grid(row=1, column=0, sticky="ns")
-size_slider = tk.Scale(size_frame, from_=200, to=10, orient="vertical", label="Ukuran Benda", command=update)
+size_slider = tk.Scale(size_frame, from_=10, to=200, orient="vertical", label="Ukuran Benda", command=update)
 size_slider.pack(fill="y", expand=True)
 size_slider.set(100)
 
 distance_frame = tk.Frame(root)
 distance_frame.grid(row=0, column=1, sticky="ew")
-distance_slider = tk.Scale(distance_frame, from_=10, to=400, orient="horizontal", label="Jarak Benda", command=update)
+distance_slider = tk.Scale(distance_frame, from_=0, to=400, orient="horizontal", label="Jarak Benda", command=update)
 distance_slider.pack(fill="x", expand=True)
 distance_slider.set(100)
 
@@ -98,8 +107,8 @@ focus_frame.grid(row=2, column=1, sticky="ew")
 focus_slider = tk.Scale(focus_frame, from_=50, to=200, orient="horizontal", label="Titik Fokus", command=update)
 focus_slider.pack(fill="x", expand=True)
 
-upload_btn = tk.Button(root, text="Upload Gambar", command=upload_image)
-upload_btn.grid(row=3, column=1, pady=10)
+#upload_btn = tk.Button(root, text="Upload Gambar", command=upload_image)
+#upload_btn.grid(row=3, column=1, pady=10)
 
 reset_btn = tk.Button(root, text="Reset Simulasi", command=reset_simulation)
 reset_btn.grid(row=4, column=1, pady=10)
